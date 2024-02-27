@@ -13,7 +13,12 @@
         <module>ruoyi-gen</module>
         <module>ruoyi-job</module>
         <module>ruoyi-file</module>
-        <module>ruoyi-product</module>
+        <module>ruoyi-plant</module>
+        <module>ruoyi-plant/ruoyi-plan-records</module>
+        <module>ruoyi-plant/ruoyi-product-manage</module>
+        <module>ruoyi-plant/ruoyi-plan-base</module>
+        <module>ruoyi-factory</module>
+        <module>ruoyi-delivery</module>
     </modules>
 
     <artifactId>ruoyi-modules</artifactId>
