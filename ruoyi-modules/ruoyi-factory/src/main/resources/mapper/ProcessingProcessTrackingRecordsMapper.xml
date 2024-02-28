@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.ProcessingProcessTrackingRecordsMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.domain.ProcessingProcessTrackingRecords">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="version" column="version" jdbcType="INTEGER"/>
+            <result property="agriculturalProductId" column="agricultural_product_id" jdbcType="INTEGER"/>
+            <result property="processingPlantId" column="processing_plant_id" jdbcType="INTEGER"/>
+            <result property="processTime" column="process_time" jdbcType="TIMESTAMP"/>
+            <result property="processContext" column="process_context" jdbcType="VARCHAR"/>
+            <result property="operatorId" column="operator_id" jdbcType="INTEGER"/>
+            <result property="recordingPersonnelId" column="recording_personnel_id" jdbcType="INTEGER"/>
+            <result property="agriculturalProductName" column="agricultural_product_name" jdbcType="VARCHAR"/>
+            <result property="processingPlantName" column="processing_plant_name" jdbcType="VARCHAR"/>
+            <result property="operatorName" column="operator_name" jdbcType="VARCHAR"/>
+            <result property="recordingPersonnelName" column="recording_personnel_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,version,agricultural_product_id,
+        processing_plant_id,process_time,process_context,
+        operator_id,recording_personnel_id,agricultural_product_name,
+        processing_plant_name,operator_name,recording_personnel_name
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from processing_process_tracking_records
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+
+    <select id="selectProcessingProcessTrackingRecordsList"
+            resultMap="BaseResultMap">
+
+        select * from processing_process_tracking_records
+
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from processing_process_tracking_records
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.ProcessingProcessTrackingRecords" useGeneratedKeys="true">
+        insert into processing_process_tracking_records
+        ( id,version,agricultural_product_id
+        ,processing_plant_id,process_time,process_context
+        ,operator_id,recording_personnel_id,agricultural_product_name
+        ,processing_plant_name,operator_name,recording_personnel_name
+        )
+        values (#{id,jdbcType=INTEGER},#{version,jdbcType=INTEGER},#{agriculturalProductId,jdbcType=INTEGER}
+        ,#{processingPlantId,jdbcType=INTEGER},#{processTime,jdbcType=TIMESTAMP},#{processContext,jdbcType=VARCHAR}
+        ,#{operatorId,jdbcType=INTEGER},#{recordingPersonnelId,jdbcType=INTEGER},#{agriculturalProductName,jdbcType=VARCHAR}
+        ,#{processingPlantName,jdbcType=VARCHAR},#{operatorName,jdbcType=VARCHAR},#{recordingPersonnelName,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.ProcessingProcessTrackingRecords" useGeneratedKeys="true">
+        insert into processing_process_tracking_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="version != null">version,</if>
+                <if test="agriculturalProductId != null">agriculturalProductId,</if>
+                <if test="processingPlantId != null">processingPlantId,</if>
+                <if test="processTime != null">processTime,</if>
+                <if test="processContext != null">processContext,</if>
+                <if test="operatorId != null">operatorId,</if>
+                <if test="recordingPersonnelId != null">recordingPersonnelId,</if>
+                <if test="agriculturalProductName != null">agriculturalProductName,</if>
+                <if test="processingPlantName != null">processingPlantName,</if>
+                <if test="operatorName != null">operatorName,</if>
+                <if test="recordingPersonnelName != null">recordingPersonnelName,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
+                <if test="version != null">version = #{version,jdbcType=INTEGER},</if>
+                <if test="agriculturalProductId != null">agricultural_product_id = #{agriculturalProductId,jdbcType=INTEGER},</if>
+                <if test="processingPlantId != null">processing_plant_id = #{processingPlantId,jdbcType=INTEGER},</if>
+                <if test="processTime != null">process_time = #{processTime,jdbcType=TIMESTAMP},</if>
+                <if test="processContext != null">process_context = #{processContext,jdbcType=VARCHAR},</if>
+                <if test="operatorId != null">operator_id = #{operatorId,jdbcType=INTEGER},</if>
+                <if test="recordingPersonnelId != null">recording_personnel_id = #{recordingPersonnelId,jdbcType=INTEGER},</if>
+                <if test="agriculturalProductName != null">agricultural_product_name = #{agriculturalProductName,jdbcType=VARCHAR},</if>
+                <if test="processingPlantName != null">processing_plant_name = #{processingPlantName,jdbcType=VARCHAR},</if>
+                <if test="operatorName != null">operator_name = #{operatorName,jdbcType=VARCHAR},</if>
+                <if test="recordingPersonnelName != null">recording_personnel_name = #{recordingPersonnelName,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.domain.ProcessingProcessTrackingRecords">
+        update processing_process_tracking_records
+        <set>
+                <if test="version != null">
+                    version = #{version,jdbcType=INTEGER},
+                </if>
+                <if test="agriculturalProductId != null">
+                    agricultural_product_id = #{agriculturalProductId,jdbcType=INTEGER},
+                </if>
+                <if test="processingPlantId != null">
+                    processing_plant_id = #{processingPlantId,jdbcType=INTEGER},
+                </if>
+                <if test="processTime != null">
+                    process_time = #{processTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="processContext != null">
+                    process_context = #{processContext,jdbcType=VARCHAR},
+                </if>
+                <if test="operatorId != null">
+                    operator_id = #{operatorId,jdbcType=INTEGER},
+                </if>
+                <if test="recordingPersonnelId != null">
+                    recording_personnel_id = #{recordingPersonnelId,jdbcType=INTEGER},
+                </if>
+                <if test="agriculturalProductName != null">
+                    agricultural_product_name = #{agriculturalProductName,jdbcType=VARCHAR},
+                </if>
+                <if test="processingPlantName != null">
+                    processing_plant_name = #{processingPlantName,jdbcType=VARCHAR},
+                </if>
+                <if test="operatorName != null">
+                    operator_name = #{operatorName,jdbcType=VARCHAR},
+                </if>
+                <if test="recordingPersonnelName != null">
+                    recording_personnel_name = #{recordingPersonnelName,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.ruoyi.domain.ProcessingProcessTrackingRecords">
+        update processing_process_tracking_records
+        set 
+            version =  #{version,jdbcType=INTEGER},
+            agricultural_product_id =  #{agriculturalProductId,jdbcType=INTEGER},
+            processing_plant_id =  #{processingPlantId,jdbcType=INTEGER},
+            process_time =  #{processTime,jdbcType=TIMESTAMP},
+            process_context =  #{processContext,jdbcType=VARCHAR},
+            operator_id =  #{operatorId,jdbcType=INTEGER},
+            recording_personnel_id =  #{recordingPersonnelId,jdbcType=INTEGER},
+            agricultural_product_name =  #{agriculturalProductName,jdbcType=VARCHAR},
+            processing_plant_name =  #{processingPlantName,jdbcType=VARCHAR},
+            operator_name =  #{operatorName,jdbcType=VARCHAR},
+            recording_personnel_name =  #{recordingPersonnelName,jdbcType=VARCHAR}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+</mapper>

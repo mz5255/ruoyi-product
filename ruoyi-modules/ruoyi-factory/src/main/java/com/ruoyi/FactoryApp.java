@@ -9,12 +9,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-@MapperScan("com.ruoyi.mapper")
-public class AppDelivery
+//@MapperScan("com.ruoyi.mapper")
+public class FactoryApp
 {
     public static void main( String[] args )
     {
-        SpringApplication.run(AppDelivery.class,args);
-        System.out.println( "Hello World!" );
+        SpringApplication.run(FactoryApp.class,args);
     }
 }
