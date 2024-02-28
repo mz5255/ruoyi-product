@@ -4,9 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.controller.BaseController;
-import com.ruoyi.common.core.web.page.TableDataInfo;
 import com.ruoyi.domain.ProcessingPlant;
-import com.ruoyi.domain.ProcessingProcessTrackingRecords;
 import com.ruoyi.service.ProcessingPlantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +23,12 @@ public class ProcessingPlantController extends BaseController {
      */
     //@RequiresPermissions("system:user:list")
     @GetMapping("/list")
-    public TableDataInfo list(ProcessingPlant processingPlant)
+    public R<?> list(ProcessingPlant processingPlant)
     {
         PageHelper.startPage(processingPlant.getPageNum(),processingPlant.getPageSize());
         List<ProcessingPlant> list = processingPlantService.selectProcessingPlantList(processingPlant);
         PageInfo<ProcessingPlant> info = new PageInfo<>(list);
-        return getDataTable(list);
+        return R.ok(list);
     }
 
     /**
@@ -71,7 +69,7 @@ public class ProcessingPlantController extends BaseController {
      * 修改加工工厂
      */
     //@RequiresPermissions("system:user:list")
-    @PostMapping("/updateProcessingPlant")
+    @PutMapping("/updateProcessingPlant")
     public R<?> updateProcessingPlant(@RequestBody ProcessingPlant processingPlant)
     {
         Integer num = processingPlantService.updateProcessingPlant(processingPlant);

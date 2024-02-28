@@ -73,7 +73,7 @@ public class ProcessingProcessTrackingRecordsController extends BaseController {
      * 修改加工过程记录跟踪
      */
     //@RequiresPermissions("system:user:list")
-    @PostMapping("/updateProcessingProcessTrackingRecords")
+    @PutMapping("/updateProcessingProcessTrackingRecords")
     public R<?> updateProcessingProcessTrackingRecords(@RequestBody ProcessingProcessTrackingRecords processingProcessTrackingRecords)
     {
         Integer num = processingProcessTrackingRecordsService.updateProcessingProcessTrackingRecords(processingProcessTrackingRecords);

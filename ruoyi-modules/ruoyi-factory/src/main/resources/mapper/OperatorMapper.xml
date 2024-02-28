@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.OperatorMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.domain.Operator">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="version" column="version" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="age" column="age" jdbcType="INTEGER"/>
+            <result property="sex" column="sex" jdbcType="INTEGER"/>
+            <result property="processingPlantId" column="processing_plant_id" jdbcType="INTEGER"/>
+            <result property="joinedDate" column="joined_date" jdbcType="TIMESTAMP"/>
+            <result property="terminationDate" column="termination_date" jdbcType="TIMESTAMP"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="phone" column="phone" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,version,name,
+        age,sex,processing_plant_id,
+        joined_date,termination_date,status,
+        phone
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from operator
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+
+    <select id="selectOperatorList" resultMap="BaseResultMap">
+        select * from operator
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from operator
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.Operator" useGeneratedKeys="true">
+        insert into operator
+        ( id,version,name
+        ,age,sex,processing_plant_id
+        ,joined_date,termination_date,status
+        ,phone)
+        values (#{id,jdbcType=INTEGER},#{version,jdbcType=INTEGER},#{name,jdbcType=VARCHAR}
+        ,#{age,jdbcType=INTEGER},#{sex,jdbcType=INTEGER},#{processingPlantId,jdbcType=INTEGER}
+        ,#{joinedDate,jdbcType=TIMESTAMP},#{terminationDate,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER}
+        ,#{phone,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.Operator" useGeneratedKeys="true">
+        insert into operator
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="version != null">version,</if>
+                <if test="name != null">name,</if>
+                <if test="age != null">age,</if>
+                <if test="sex != null">sex,</if>
+                <if test="processingPlantId != null">processingPlantId,</if>
+                <if test="joinedDate != null">joinedDate,</if>
+                <if test="terminationDate != null">terminationDate,</if>
+                <if test="status != null">status,</if>
+                <if test="phone != null">phone,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
+                <if test="version != null">version = #{version,jdbcType=INTEGER},</if>
+                <if test="name != null">name = #{name,jdbcType=VARCHAR},</if>
+                <if test="age != null">age = #{age,jdbcType=INTEGER},</if>
+                <if test="sex != null">sex = #{sex,jdbcType=INTEGER},</if>
+                <if test="processingPlantId != null">processing_plant_id = #{processingPlantId,jdbcType=INTEGER},</if>
+                <if test="joinedDate != null">joined_date = #{joinedDate,jdbcType=TIMESTAMP},</if>
+                <if test="terminationDate != null">termination_date = #{terminationDate,jdbcType=TIMESTAMP},</if>
+                <if test="status != null">status = #{status,jdbcType=INTEGER},</if>
+                <if test="phone != null">phone = #{phone,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.domain.Operator">
+        update operator
+        <set>
+                <if test="version != null">
+                    version = #{version,jdbcType=INTEGER},
+                </if>
+                <if test="name != null">
+                    name = #{name,jdbcType=VARCHAR},
+                </if>
+                <if test="age != null">
+                    age = #{age,jdbcType=INTEGER},
+                </if>
+                <if test="sex != null">
+                    sex = #{sex,jdbcType=INTEGER},
+                </if>
+                <if test="processingPlantId != null">
+                    processing_plant_id = #{processingPlantId,jdbcType=INTEGER},
+                </if>
+                <if test="joinedDate != null">
+                    joined_date = #{joinedDate,jdbcType=TIMESTAMP},
+                </if>
+                <if test="terminationDate != null">
+                    termination_date = #{terminationDate,jdbcType=TIMESTAMP},
+                </if>
+                <if test="status != null">
+                    status = #{status,jdbcType=INTEGER},
+                </if>
+                <if test="phone != null">
+                    phone = #{phone,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.ruoyi.domain.Operator">
+        update operator
+        set 
+            version =  #{version,jdbcType=INTEGER},
+            name =  #{name,jdbcType=VARCHAR},
+            age =  #{age,jdbcType=INTEGER},
+            sex =  #{sex,jdbcType=INTEGER},
+            processing_plant_id =  #{processingPlantId,jdbcType=INTEGER},
+            joined_date =  #{joinedDate,jdbcType=TIMESTAMP},
+            termination_date =  #{terminationDate,jdbcType=TIMESTAMP},
+            status =  #{status,jdbcType=INTEGER},
+            phone =  #{phone,jdbcType=VARCHAR}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+</mapper>
