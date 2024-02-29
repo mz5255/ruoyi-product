@@ -28,7 +28,7 @@
         select
         <include refid="Base_Column_List" />
         from operator
-        where  id = #{id,jdbcType=INTEGER} 
+        where  id = #{id,jdbcType=INTEGER}
     </select>
 
     <select id="selectOperatorList" resultMap="BaseResultMap">
@@ -37,7 +37,7 @@
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from operator
-        where  id = #{id,jdbcType=INTEGER} 
+        where  id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.Operator" useGeneratedKeys="true">
         insert into operator
@@ -108,12 +108,12 @@
                     phone = #{phone,jdbcType=VARCHAR},
                 </if>
         </set>
-        where   id = #{id,jdbcType=INTEGER} 
+        where   id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.ruoyi.domain.Operator">
         update operator
-        set 
-            version =  #{version,jdbcType=INTEGER},
+        set
+            version =  version+1,
             name =  #{name,jdbcType=VARCHAR},
             age =  #{age,jdbcType=INTEGER},
             sex =  #{sex,jdbcType=INTEGER},
@@ -122,6 +122,6 @@
             termination_date =  #{terminationDate,jdbcType=TIMESTAMP},
             status =  #{status,jdbcType=INTEGER},
             phone =  #{phone,jdbcType=VARCHAR}
-        where   id = #{id,jdbcType=INTEGER} 
+        where   id = #{id,jdbcType=INTEGER}
     </update>
 </mapper>

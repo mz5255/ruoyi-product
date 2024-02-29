@@ -22,14 +22,15 @@ public class ProcessingPlantController extends BaseController {
      * 获取加工工厂列表
      */
     //@RequiresPermissions("system:user:list")
-    @GetMapping("/list")
-    public R<?> list(ProcessingPlant processingPlant)
+    @PostMapping("/list")
+    public R<?> list(@RequestBody ProcessingPlant processingPlant)
     {
         PageHelper.startPage(processingPlant.getPageNum(),processingPlant.getPageSize());
         List<ProcessingPlant> list = processingPlantService.selectProcessingPlantList(processingPlant);
         PageInfo<ProcessingPlant> info = new PageInfo<>(list);
-        return R.ok(list);
+        return R.ok(info);
     }
+
 
     /**
      * 根据id获取加工工厂

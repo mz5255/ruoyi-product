@@ -25,8 +25,8 @@ public class ProcessingProcessTrackingRecordsController extends BaseController {
      * 获取加工过程记录跟踪列表
      */
     //@RequiresPermissions("factory:processingProcessTrackingRecords:list")
-    @GetMapping("/list")
-    public R<?> list(ProcessingProcessTrackingRecords processingProcessTrackingRecords)
+    @PostMapping("/list")
+    public R<?> list(@RequestBody ProcessingProcessTrackingRecords processingProcessTrackingRecords)
     {
         //startPage();
         PageHelper.startPage(processingProcessTrackingRecords.getPageNum(),processingProcessTrackingRecords.getPageSize());

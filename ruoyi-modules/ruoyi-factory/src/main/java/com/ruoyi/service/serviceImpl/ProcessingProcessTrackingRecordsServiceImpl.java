@@ -1,9 +1,12 @@
 package com.ruoyi.service.serviceImpl;
 
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.security.auth.AuthUtil;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.domain.ProcessingProcessTrackingRecords;
 import com.ruoyi.mapper.ProcessingProcessTrackingRecordsMapper;
 import com.ruoyi.service.ProcessingProcessTrackingRecordsService;
+import com.ruoyi.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +44,10 @@ public class ProcessingProcessTrackingRecordsServiceImpl implements ProcessingPr
     @Override
     public Integer insertProcessingProcessTrackingRecords(ProcessingProcessTrackingRecords processingProcessTrackingRecords) {
         processingProcessTrackingRecords.setProcessTime(new Date());
+        String token = SecurityUtils.getToken();
+        LoginUser loginUser = AuthUtil.getLoginUser(token);
+        processingProcessTrackingRecords.setRecordingPersonnelId(loginUser.getUserid().intValue());
+        processingProcessTrackingRecords.setRecordingPersonnelName(loginUser.getUsername());
         return mapper.insert(processingProcessTrackingRecords);
     }
 
