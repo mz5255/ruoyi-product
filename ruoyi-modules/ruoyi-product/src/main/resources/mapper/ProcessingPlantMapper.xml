@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.ProcessingPlantMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.domain.ProcessingPlant">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="version" column="version" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="legalPerson" column="legal_person" jdbcType="VARCHAR"/>
+            <result property="personNumber" column="person_number" jdbcType="INTEGER"/>
+            <result property="baseProvinceId" column="base_province_id" jdbcType="INTEGER"/>
+            <result property="baseCityId" column="base_city_id" jdbcType="INTEGER"/>
+            <result property="baseAreaId" column="base_area_id" jdbcType="INTEGER"/>
+            <result property="baseProvinceName" column="base_province_name" jdbcType="VARCHAR"/>
+            <result property="baseCityName" column="base_city_name" jdbcType="VARCHAR"/>
+            <result property="baseAreaName" column="base_area_name" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,version,name,
+        create_time,status,legal_person,
+        person_number,base_province_id,base_city_id,
+        base_area_id,base_province_name,base_city_name,
+        base_area_name,address
+    </sql>
+</mapper>

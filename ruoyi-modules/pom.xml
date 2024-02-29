@@ -29,5 +29,11 @@
     <description>
         ruoyi-modules业务模块
     </description>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

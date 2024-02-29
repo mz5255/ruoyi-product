@@ -1,19 +1,24 @@
 package com.ruoyi.controller;
 
+import cn.hutool.core.util.IdUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.ExcelUtil;
 import com.ruoyi.common.PageBean;
 import com.ruoyi.common.ResultModel;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.domain.ProcessingPlant;
 import com.ruoyi.domain.SysProduct;
+import com.ruoyi.service.FeignService;
 import com.ruoyi.service.SysProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +32,9 @@ public class ProductController {
 
     @Autowired
     RedisTemplate redisTemplate;
+
+    @Autowired
+    FeignService feignService;
 
     /**
      * 产品列表
@@ -44,7 +52,7 @@ public class ProductController {
         PageHelper.startPage(pageBean);
         List<SysProduct> list = productService.getManagement(SysProduct);
         PageInfo<SysProduct> productManagementPageInfo = new PageInfo<>(list);
-//        redisTemplate.opsForValue().set("productList",list);
+        redisTemplate.opsForValue().set("productList",list);
         return ResultModel.successed(productManagementPageInfo);
 
     }
@@ -56,6 +64,10 @@ public class ProductController {
      */
     @PostMapping("ProductSave")
     public ResultModel ProductSave(SysProduct productManagement){
+        String productNum = IdUtil.getSnowflake().nextId() + "";
+        productManagement.setProductNum(productNum);
+
+        productManagement.setVersion(productManagement.getVersion());
         productManagement.setCreateTime(new Date());
         productService.save(productManagement);
         return ResultModel.successed(null);
@@ -68,6 +80,7 @@ public class ProductController {
      */
     @PostMapping("ProductUpdate")
     public ResultModel ProductUpdate(SysProduct productManagement){
+        productManagement.setVersion(productManagement.getVersion().add(BigDecimal.valueOf(1)));
         productService.updateById(productManagement);
         return ResultModel.successed(null);
     }
@@ -99,4 +112,24 @@ public class ProductController {
         return ResultModel.successed(null);
     }
 
+    @PostMapping("FactoryList")
+    public ResultModel FactoryList(ProcessingPlant processingPlant){
+        PageInfo<ProcessingPlant> list = feignService.list(processingPlant);
+        return ResultModel.successed(list);
+    }
+
+    /**
+     * excel导出
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping("exportExcel")
+    public void exportExcel(HttpServletResponse response){
+        List<SysProduct> list = productService.list();
+        ExcelUtil.downExcel("产品表","产品信息",list,response);
+    }
+    @PostMapping("importExcel")
+    public void importExcel(SysProduct sysProduct, MultipartFile file){
+        ExcelUtil.read(sysProduct.getClass(),file);
+    }
 }
