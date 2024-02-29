@@ -30,7 +30,7 @@
         select
         <include refid="Base_Column_List" />
         from processing_process_tracking_records
-        where  id = #{id,jdbcType=INTEGER} 
+        where  id = #{id,jdbcType=INTEGER}
     </select>
 
     <select id="selectProcessingProcessTrackingRecordsList"
@@ -42,7 +42,7 @@
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from processing_process_tracking_records
-        where  id = #{id,jdbcType=INTEGER} 
+        where  id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.ProcessingProcessTrackingRecords" useGeneratedKeys="true">
         insert into processing_process_tracking_records
@@ -125,12 +125,12 @@
                     recording_personnel_name = #{recordingPersonnelName,jdbcType=VARCHAR},
                 </if>
         </set>
-        where   id = #{id,jdbcType=INTEGER} 
+        where   id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.ruoyi.domain.ProcessingProcessTrackingRecords">
         update processing_process_tracking_records
-        set 
-            version =  #{version,jdbcType=INTEGER},
+        set
+            version =  version+1,
             agricultural_product_id =  #{agriculturalProductId,jdbcType=INTEGER},
             processing_plant_id =  #{processingPlantId,jdbcType=INTEGER},
             process_time =  #{processTime,jdbcType=TIMESTAMP},
@@ -141,6 +141,6 @@
             processing_plant_name =  #{processingPlantName,jdbcType=VARCHAR},
             operator_name =  #{operatorName,jdbcType=VARCHAR},
             recording_personnel_name =  #{recordingPersonnelName,jdbcType=VARCHAR}
-        where   id = #{id,jdbcType=INTEGER} 
+        where   id = #{id,jdbcType=INTEGER}
     </update>
 </mapper>

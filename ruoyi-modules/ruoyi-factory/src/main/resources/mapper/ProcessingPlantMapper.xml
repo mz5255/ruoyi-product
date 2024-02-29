@@ -25,16 +25,22 @@
         select
         <include refid="Base_Column_List" />
         from processing_plant
-        where  id = #{id,jdbcType=INTEGER} 
+        where  id = #{id,jdbcType=INTEGER}
     </select>
 
     <select id="selectProcessingPlantList" resultMap="BaseResultMap">
-        select * from processing_plant
+        select * from processing_plant where 1=1
+        <if test="param.name!=null and param.name!=''">
+            AND name like concat('%', #{param.name}, '%')
+        </if>
+        <if test="param.status!=null and param.status!=''">
+            AND status = #{param.status}
+        </if>
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from processing_plant
-        where  id = #{id,jdbcType=INTEGER} 
+        where  id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.ProcessingPlant" useGeneratedKeys="true">
         insert into processing_plant
@@ -93,18 +99,18 @@
                     person_number = #{personNumber,jdbcType=INTEGER},
                 </if>
         </set>
-        where   id = #{id,jdbcType=INTEGER} 
+        where   id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.ruoyi.domain.ProcessingPlant">
         update processing_plant
-        set 
-            version =  #{version,jdbcType=INTEGER},
+        set
+            version =  version+1,
             name =  #{name,jdbcType=VARCHAR},
             address =  #{address,jdbcType=VARCHAR},
             create_time =  #{createTime,jdbcType=TIMESTAMP},
             status =  #{status,jdbcType=INTEGER},
             legal_person =  #{legalPerson,jdbcType=VARCHAR},
             person_number =  #{personNumber,jdbcType=INTEGER}
-        where   id = #{id,jdbcType=INTEGER} 
+        where   id = #{id,jdbcType=INTEGER}
     </update>
 </mapper>
