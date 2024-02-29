@@ -1,6 +1,7 @@
 package com.ruoyi.system.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,6 +66,20 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysConfigService configService;
+
+    /**
+     * 获取用户列表无参
+     */
+
+    @GetMapping("userList")
+    public HashMap<String,Object> getUsetList(){
+        HashMap<String, Object> map = new HashMap<>();
+        List<SysUser> list = userService.MySelectUserList();
+        map.put("list",list);
+        return  map;
+    }
+
+
 
     /**
      * 获取用户列表

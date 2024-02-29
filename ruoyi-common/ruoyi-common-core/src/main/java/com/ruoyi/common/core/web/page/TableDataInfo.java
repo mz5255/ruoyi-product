@@ -8,6 +8,7 @@ import java.util.List;
  * 
  * @author ruoyi
  */
+
 public class TableDataInfo implements Serializable
 {
     private static final long serialVersionUID = 1L;
