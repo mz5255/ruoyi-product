@@ -4,12 +4,16 @@
        <el-form-item label="农产品名称">
          <el-input v-model="productManagementFrom.cultivarName" placeholder="农产品名称"></el-input>
        </el-form-item>
-<!--       <el-form-item label="产品类型">-->
-<!--         <el-select  placeholder="请选择">-->
-<!--           <el-option label="果蔬" value="0"></el-option>-->
-<!--           <el-option label="农产品" value="1"></el-option>-->
-<!--         </el-select>-->
-<!--       </el-form-item>-->
+       <el-form-item label="产品类型">
+         <el-select v-model="productManagementFrom.type" placeholder="请选择">
+           <el-option
+             v-for="item in options"
+             :key="item.id"
+             :label="item.label"
+             :value="item.value">
+           </el-option>
+         </el-select>
+       </el-form-item>
 
        <el-form-item>
          <el-button type="primary" @click="onSubmit">查询</el-button>
@@ -26,9 +30,19 @@
            v-hasPermi="['system:dept:add']"
          >新增</el-button>
        </el-col>
-
+       <el-col :span="1.5">
+         <el-button
+           type="warning"
+           plain
+           icon="el-icon-download"
+           size="mini"
+           @click="handleExport"
+           v-hasPermi="['system:dict:export']"
+         >导出</el-button>
+       </el-col>
        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
      </el-row>
+
      <el-table
        :data="productManagement"
        stripe
@@ -36,6 +50,11 @@
        <el-table-column
          prop="productNum"
          label="产品编号"
+         width="180">
+       </el-table-column>
+       <el-table-column
+         prop="version"
+         label="版本号"
          width="180">
        </el-table-column>
        <el-table-column
@@ -48,11 +67,12 @@
          label="产品的状态"
          width="180">
            <template slot-scope="scope">
-             <el-switch
-               v-model="scope.row.status"
-               active-color="#13ce66"
-               inactive-color="#ff4949">
-             </el-switch>
+               <el-switch
+                 v-model="updateStatusById.parentId"
+                 active-color="#13ce66"
+                 inactive-color="#ff4949"
+                 @change="updateStatus">
+               </el-switch>
            </template>
        </el-table-column>
        <el-table-column
@@ -77,15 +97,10 @@
          </template>
        </el-table-column>
 
-       <el-table-column
-         prop="sort"
-         label="排序">
-       </el-table-column>
 
        <el-table-column
          prop="createTime"
-         label="生产时间"
-          dataformatas="yyyy-MM-dd HH:mm:dd">
+         label="生产时间">
        </el-table-column>
        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
          <template slot-scope="scope">
@@ -128,12 +143,15 @@
          <el-form-item label="产品名称" :label-width="formLabelWidth">
            <el-input v-model="saveProductManagementFrom.cultivarName" autocomplete="off"></el-input>
          </el-form-item>
+         <el-form-item label="产品版本" :label-width="formLabelWidth">
+           <el-input-number v-model="saveProductManagementFrom.version"  :min="1" label="产品版本"></el-input-number>
+         </el-form-item>
          <el-form-item label="产品的状态" :label-width="formLabelWidth">
            <el-radio v-model="saveProductManagementFrom.status" label="0">正 常</el-radio>
            <el-radio v-model="saveProductManagementFrom.status" label="1">下 架</el-radio>
          </el-form-item>
          <el-form-item label="产品类型" :label-width="formLabelWidth">
-           <el-radio v-model="saveProductManagementFrom.type" label="0">果 蔬</el-radio>
+           <el-radio v-model="saveProductManagementFrom.type" label="0">果 蔬 </el-radio>
            <el-radio v-model="saveProductManagementFrom.type" label="1">农 产 品</el-radio>
          </el-form-item>
          <el-form-item label="产品介绍" :label-width="formLabelWidth">
@@ -150,8 +168,8 @@
              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
            </el-upload>
          </el-form-item>
-         <el-form-item label="排序" :label-width="formLabelWidth">
-           <el-input v-model="saveProductManagementFrom.sort" autocomplete="off"></el-input>
+         <el-form-item label="展示序号" :label-width="formLabelWidth">
+           <el-input-number v-model="saveProductManagementFrom.sort"  :min="1" label="排序"></el-input-number>
          </el-form-item>
        </el-form>
        <div slot="footer" class="dialog-footer">
@@ -203,14 +221,21 @@
 <script>
 
 
-import {delProduct, getProductManagement, saveProduct, updateProduct, updateStatusById} from "@/api/system/product";
+import {
+  delProduct,
+  exportExael,
+  getProductManagement,
+  saveProduct,
+  updateProduct,
+  updateStatusById
+} from "@/api/system/product";
 
 export default {
   name: "index",
   data(){
     return{
       updateStatusById:{
-
+        productId:1,
       },
       photo:"",
       imageUrl:"",
@@ -227,7 +252,9 @@ export default {
       dialogFormVisibleTwo:false,
       formLabelWidth:"100px",
       saveProductManagementFrom:{
-        imageUrl:""
+        imageUrl:"",
+        version:"",
+
       },
       previews: {},
       showSearch: true,
@@ -235,6 +262,13 @@ export default {
     }
   },
   methods:{
+    handleExport() {
+      // exportExael().then(()=>{
+      //   this.getList()
+      // })
+      //
+      window.location="http://localhost:8998/productManagement/exportExcel";
+    },
     handleAvatarSuccess(file) {
       console.log(file)
       this.imageUrl = URL.createObjectURL(file.raw);
@@ -257,14 +291,13 @@ export default {
         this.getList()
       })
     },
-    handleUpdate(row){
-      console.log(row)
+    handleUpdate(){
+
      this.dialogFormVisibleTwo=true;
      this.updateProductManagementFrom=row;
 
     },
     handleDelete(row){
-      console.log(row)
       delProduct(row.productId).then(()=>{
         this.getList()
       })
@@ -281,16 +314,20 @@ export default {
     onSubmit(){
       this.getList()
     },
-    updateStatus(row){
-      console.log(row)
-      updateStatusById(row.id).then(()=>{
-        this.getList()
-      })
+    updateStatus(){
+      if (this.updateStatusById.status==1){
+        this.updateStatusById.status=2;
+      }else{
+        this.updateStatusById.status=1;
+      }
+
+      // updateStatusById(this.updateStatusById.productId).then(()=>{
+      //   this.getList()
+      // })
 
     },
     getList(){
       getProductManagement(this.productManagementFrom).then(resp=>{
-        console.log(resp)
         this.photo=resp.data.list.photo
         this.productManagementFrom.pageNum=1;
         this.productManagementFrom.total=resp.data.total;

@@ -11,8 +11,8 @@ export function getProductManagement(query) {
 // 修改状态
 export function updateStatusById(id) {
   return request({
-    url: '/product/productManagement/updateStatusById?id='+id,
-    method: 'post',
+    url: '/product/productManagement/updateStatusById?productId='+id,
+    method: 'get',
   })
 }
 
@@ -41,4 +41,14 @@ export function updateProduct(query) {
     params: query
   })
 }
+
+export function exportExael() {
+  return request({
+    url: '/product/productManagement/exportExcel',
+    method: 'post',
+  })
+}
+
+
+
 

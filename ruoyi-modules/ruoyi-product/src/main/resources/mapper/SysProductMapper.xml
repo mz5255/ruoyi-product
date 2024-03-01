@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.ruoyi.domain.SysProduct">
             <id property="productId" column="product_id" jdbcType="INTEGER"/>
-            <result property="version" column="version" jdbcType="VARCHAR"/>
+            <result property="version" column="version" jdbcType="DECIMAL"/>
             <result property="createTime" column="create_time" jdbcType="DATE"/>
             <result property="cultivarName" column="cultivar_name" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="INTEGER"/>

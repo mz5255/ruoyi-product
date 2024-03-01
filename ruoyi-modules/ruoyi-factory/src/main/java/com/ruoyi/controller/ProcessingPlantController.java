@@ -29,12 +29,12 @@ public class ProcessingPlantController extends BaseController {
      */
     //@RequiresPermissions("system:user:list")
     @PostMapping("/list")
-    public R<?> list(@RequestBody ProcessingPlant processingPlant)
+    public PageInfo<ProcessingPlant> list(@RequestBody ProcessingPlant processingPlant)
     {
         PageHelper.startPage(processingPlant.getPageNum(),processingPlant.getPageSize());
         List<ProcessingPlant> list = processingPlantService.selectProcessingPlantList(processingPlant);
         PageInfo<ProcessingPlant> info = new PageInfo<>(list);
-        return R.ok(info);
+        return info;
     }
 
 
