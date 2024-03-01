@@ -1,9 +1,11 @@
 package com.ruoyi.mapper;
 
 import com.ruoyi.domain.ProcessingPlant;
+import com.ruoyi.domain.SysProductProcessingPlant;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +27,10 @@ public interface ProcessingPlantMapper {
     int updateByPrimaryKey(ProcessingPlant record);
 
     List<ProcessingPlant> selectProcessingPlantList(@Param("param") ProcessingPlant processingPlant);
+
+    List<SysProductProcessingPlant> getProductByProcessingPlantId(@Param("id") Integer id);
+
+    void insertBacth(@Param("list") ArrayList<ProcessingPlant> arrayList);
 }
 
 

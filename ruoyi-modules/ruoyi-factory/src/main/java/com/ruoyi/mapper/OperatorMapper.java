@@ -25,6 +25,8 @@ public interface OperatorMapper {
     int updateByPrimaryKey(Operator record);
 
     List<Operator> selectOperatorList(@Param("param") Operator operator);
+
+    List<Operator> getOperatorByProcessingPlantId(@Param("id") Integer id);
 }
 
 
