@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.BaseInfoMapper">
+
+    <resultMap type="com.ruoyi.system.api.domain.BaseInfo" id="BaseInfoResult">
+        <result property="baseId"    column="base_id"    />
+        <result property="baseNum"    column="base_num"    />
+        <result property="provinceId"    column="province_id"    />
+        <result property="cityId"    column="city_id"    />
+        <result property="areaId"    column="area_id"    />
+        <result property="baseName"    column="base_name"    />
+        <result property="cooperatorId"    column="cooperator_id"    />
+        <result property="charge"    column="charge"    />
+        <result property="phone"    column="phone"    />
+        <result property="area"    column="area"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="cropName"    column="crop_name"    />
+        <result property="status"    column="status"    />
+        <result property="level"    column="level"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="operator"    column="operator"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectBaseInfoVo">
+        select base_id, base_num, province_id, city_id, area_id, base_name, cooperator_id, charge, phone, area, create_time, crop_name, status, level, del_flag, operator, remark from base_info
+    </sql>
+
+    <select id="selectBaseInfoList" parameterType="com.ruoyi.system.api.domain.BaseInfo" resultMap="BaseInfoResult">
+        <include refid="selectBaseInfoVo"/>
+        <where>
+            <if test="baseNum != null "> and base_num = #{baseNum}</if>
+            <if test="provinceId != null "> and province_id = #{provinceId}</if>
+            <if test="cityId != null "> and city_id = #{cityId}</if>
+            <if test="areaId != null "> and area_id = #{areaId}</if>
+            <if test="baseName != null  and baseName != ''"> and base_name like concat('%', #{baseName}, '%')</if>
+            <if test="cooperatorId != null "> and cooperator_id = #{cooperatorId}</if>
+            <if test="charge != null  and charge != ''"> and charge = #{charge}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="area != null  and area != ''"> and area = #{area}</if>
+            <if test="cropName != null  and cropName != ''"> and crop_name like concat('%', #{cropName}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="level != null "> and level = #{level}</if>
+            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+        </where>
+    </select>
+
+    <select id="selectBaseInfoByBaseId" parameterType="Long" resultMap="BaseInfoResult">
+        <include refid="selectBaseInfoVo"/>
+        where base_id = #{baseId}
+    </select>
+
+    <insert id="insertBaseInfo" parameterType="com.ruoyi.system.api.domain.BaseInfo" useGeneratedKeys="true" keyProperty="baseId">
+        insert into base_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="baseNum != null">base_num,</if>
+            <if test="provinceId != null">province_id,</if>
+            <if test="cityId != null">city_id,</if>
+            <if test="areaId != null">area_id,</if>
+            <if test="baseName != null">base_name,</if>
+            <if test="cooperatorId != null">cooperator_id,</if>
+            <if test="charge != null">charge,</if>
+            <if test="phone != null">phone,</if>
+            <if test="area != null">area,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="cropName != null">crop_name,</if>
+            <if test="status != null">status,</if>
+            <if test="level != null">level,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="operator != null">operator,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="baseNum != null">#{baseNum},</if>
+            <if test="provinceId != null">#{provinceId},</if>
+            <if test="cityId != null">#{cityId},</if>
+            <if test="areaId != null">#{areaId},</if>
+            <if test="baseName != null">#{baseName},</if>
+            <if test="cooperatorId != null">#{cooperatorId},</if>
+            <if test="charge != null">#{charge},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="area != null">#{area},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="cropName != null">#{cropName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="level != null">#{level},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="operator != null">#{operator},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBaseInfo" parameterType="com.ruoyi.system.api.domain.BaseInfo">
+        update base_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="baseNum != null">base_num = #{baseNum},</if>
+            <if test="provinceId != null">province_id = #{provinceId},</if>
+            <if test="cityId != null">city_id = #{cityId},</if>
+            <if test="areaId != null">area_id = #{areaId},</if>
+            <if test="baseName != null">base_name = #{baseName},</if>
+            <if test="cooperatorId != null">cooperator_id = #{cooperatorId},</if>
+            <if test="charge != null">charge = #{charge},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="area != null">area = #{area},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="cropName != null">crop_name = #{cropName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where base_id = #{baseId}
+    </update>
+
+    <delete id="deleteBaseInfoByBaseId" parameterType="Long">
+        delete from base_info where base_id = #{baseId}
+    </delete>
+
+    <delete id="deleteBaseInfoByBaseIds" parameterType="String">
+        delete from base_info where base_id in
+        <foreach item="baseId" collection="array" open="(" separator="," close=")">
+            #{baseId}
+        </foreach>
+    </delete>
+</mapper>

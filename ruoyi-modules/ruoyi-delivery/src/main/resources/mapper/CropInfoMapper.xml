@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.CropInfoMapper">
+
+    <resultMap type="com.ruoyi.system.api.domain.CropInfo" id="CropInfoResult">
+        <result property="id"    column="id"    />
+        <result property="cropNum"    column="crop_num"    />
+        <result property="baseId"    column="base_id"    />
+        <result property="cropName"    column="crop_name"    />
+        <result property="registrationTime"    column="registration_time"    />
+        <result property="cycle"    column="cycle"    />
+        <result property="baseCharge"    column="base_charge"    />
+        <result property="basePhone"    column="base_phone"    />
+        <result property="planmethodId"    column="planMethod_id"    />
+        <result property="irrigationId"    column="irrigation_id"    />
+        <result property="fertId"    column="fert_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="operator"    column="operator"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectCropInfoVo">
+        select id, crop_num, base_id, crop_name, registration_time, cycle, base_charge, base_phone, planMethod_id, irrigation_id, fert_id, remark, operator, del_flag, create_time from crop_info
+    </sql>
+
+    <select id="selectCropInfoList" parameterType="com.ruoyi.system.api.domain.CropInfo" resultMap="CropInfoResult">
+        <include refid="selectCropInfoVo"/>
+        <where>
+            <if test="cropNum != null "> and crop_num = #{cropNum}</if>
+            <if test="baseId != null "> and base_id = #{baseId}</if>
+            <if test="cropName != null  and cropName != ''"> and crop_name like concat('%', #{cropName}, '%')</if>
+            <if test="registrationTime != null "> and registration_time = #{registrationTime}</if>
+            <if test="cycle != null  and cycle != ''"> and cycle = #{cycle}</if>
+            <if test="baseCharge != null  and baseCharge != ''"> and base_charge = #{baseCharge}</if>
+            <if test="basePhone != null  and basePhone != ''"> and base_phone = #{basePhone}</if>
+            <if test="planmethodId != null "> and planMethod_id = #{planmethodId}</if>
+            <if test="irrigationId != null "> and irrigation_id = #{irrigationId}</if>
+            <if test="fertId != null "> and fert_id = #{fertId}</if>
+            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+        </where>
+    </select>
+
+    <select id="selectCropInfoById" parameterType="Long" resultMap="CropInfoResult">
+        <include refid="selectCropInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCropInfo" parameterType="com.ruoyi.system.api.domain.CropInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into crop_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cropNum != null">crop_num,</if>
+            <if test="baseId != null">base_id,</if>
+            <if test="cropName != null">crop_name,</if>
+            <if test="registrationTime != null">registration_time,</if>
+            <if test="cycle != null">cycle,</if>
+            <if test="baseCharge != null">base_charge,</if>
+            <if test="basePhone != null">base_phone,</if>
+            <if test="planmethodId != null">planMethod_id,</if>
+            <if test="irrigationId != null">irrigation_id,</if>
+            <if test="fertId != null">fert_id,</if>
+            <if test="remark != null">remark,</if>
+            <if test="operator != null">operator,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cropNum != null">#{cropNum},</if>
+            <if test="baseId != null">#{baseId},</if>
+            <if test="cropName != null">#{cropName},</if>
+            <if test="registrationTime != null">#{registrationTime},</if>
+            <if test="cycle != null">#{cycle},</if>
+            <if test="baseCharge != null">#{baseCharge},</if>
+            <if test="basePhone != null">#{basePhone},</if>
+            <if test="planmethodId != null">#{planmethodId},</if>
+            <if test="irrigationId != null">#{irrigationId},</if>
+            <if test="fertId != null">#{fertId},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="operator != null">#{operator},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCropInfo" parameterType="com.ruoyi.system.api.domain.CropInfo">
+        update crop_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cropNum != null">crop_num = #{cropNum},</if>
+            <if test="baseId != null">base_id = #{baseId},</if>
+            <if test="cropName != null">crop_name = #{cropName},</if>
+            <if test="registrationTime != null">registration_time = #{registrationTime},</if>
+            <if test="cycle != null">cycle = #{cycle},</if>
+            <if test="baseCharge != null">base_charge = #{baseCharge},</if>
+            <if test="basePhone != null">base_phone = #{basePhone},</if>
+            <if test="planmethodId != null">planMethod_id = #{planmethodId},</if>
+            <if test="irrigationId != null">irrigation_id = #{irrigationId},</if>
+            <if test="fertId != null">fert_id = #{fertId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCropInfoById" parameterType="Long">
+        delete from crop_info where id = #{id}
+    </delete>
+
+    <delete id="deleteCropInfoByIds" parameterType="String">
+        delete from crop_info where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

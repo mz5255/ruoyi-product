@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mapper.PlanInfoMapper">
+
+    <resultMap type="com.ruoyi.system.api.domain.PlanInfo" id="PlanInfoResult">
+        <result property="planId"    column="plan_id"    />
+        <result property="cropInfoId"    column="crop_info_id"    />
+        <result property="recordTime"    column="record_time"    />
+        <result property="temperature"    column="temperature"    />
+        <result property="arowths"    column="arowths"    />
+        <result property="humidness"    column="humidness"    />
+        <result property="illumination"    column="illumination"    />
+        <result property="pic"    column="pic"    />
+        <result property="remark"    column="remark"    />
+        <result property="operator"    column="operator"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <association property="cropInfo" column="crop_info_id" javaType="com.ruoyi.system.api.domain.CropInfo">
+            <result property="id"    column="id"    />
+            <result property="cropNum"    column="crop_num"    />
+            <result property="baseId"    column="base_id"    />
+            <result property="cropName"    column="crop_name"    />
+            <result property="registrationTime"    column="registration_time"    />
+            <result property="cycle"    column="cycle"    />
+            <result property="baseCharge"    column="base_charge"    />
+            <result property="basePhone"    column="base_phone"    />
+            <result property="planmethodId"    column="planMethod_id"    />
+            <result property="irrigationId"    column="irrigation_id"    />
+            <result property="fertId"    column="fert_id"    />
+            <result property="remark"    column="remark"    />
+            <result property="operator"    column="operator"    />
+            <result property="delFlag"    column="del_flag"    />
+            <result property="createTime"    column="create_time"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectPlanInfoVo">
+        select plan_id, crop_info_id, record_time, temperature, arowths, humidness, illumination, pic, remark, operator, del_flag, create_time from plan_info p
+    </sql>
+
+    <select id="selectPlanInfoList" parameterType="com.ruoyi.system.api.domain.PlanInfo" resultMap="PlanInfoResult">
+        SELECT
+        p.plan_id,
+        p.crop_info_id,
+        p.record_time,
+        p.temperature,
+        p.arowths,
+        p.humidness,
+        p.illumination,
+        p.pic,
+        p.remark,
+        p.operator,
+        p.del_flag,
+        p.create_time ,
+        c.crop_name,
+        c.id,
+        c.crop_num,
+        c.base_id,
+        c.registration_time,
+        c.cycle,
+        c.base_charge,
+        c.base_phone,
+        c.planMethod_id,
+        c.irrigation_id,
+        c.fert_id,
+        c.remark,
+        c.operator,
+        c.create_time
+        FROM
+        plan_info p
+
+        LEFT JOIN crop_info c on c.id = p.crop_info_id
+        <where>
+            <if test="cropInfoId != null "> and crop_info_id = #{cropInfoId}</if>
+            <if test="recordTime != null "> and record_time = #{recordTime}</if>
+            <if test="temperature != null  and temperature != ''"> and temperature = #{temperature}</if>
+            <if test="arowths != null  and arowths != ''"> and arowths = #{arowths}</if>
+            <if test="humidness != null  and humidness != ''"> and humidness = #{humidness}</if>
+            <if test="illumination != null  and illumination != ''"> and illumination = #{illumination}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(p.record_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(p.record_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            and p.del_flag = '0'
+        </where>
+    </select>
+
+    <select id="selectPlanInfoByPlanId" parameterType="Long" resultMap="PlanInfoResult">
+        <include refid="selectPlanInfoVo"/>
+        where plan_id = #{planId} and p.del_flag = '0'
+    </select>
+
+    <insert id="insertPlanInfo" parameterType="com.ruoyi.system.api.domain.PlanInfo" useGeneratedKeys="true" keyProperty="planId">
+        insert into plan_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cropInfoId != null">crop_info_id,</if>
+            <if test="recordTime != null">record_time,</if>
+            <if test="temperature != null">temperature,</if>
+            <if test="arowths != null">arowths,</if>
+            <if test="humidness != null">humidness,</if>
+            <if test="illumination != null">illumination,</if>
+            <if test="pic != null">pic,</if>
+            <if test="remark != null">remark,</if>
+            <if test="operator != null">operator,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cropInfoId != null">#{cropInfoId},</if>
+            <if test="recordTime != null">#{recordTime},</if>
+            <if test="temperature != null">#{temperature},</if>
+            <if test="arowths != null">#{arowths},</if>
+            <if test="humidness != null">#{humidness},</if>
+            <if test="illumination != null">#{illumination},</if>
+            <if test="pic != null">#{pic},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="operator != null">#{operator},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePlanInfo" parameterType="com.ruoyi.system.api.domain.PlanInfo">
+        update plan_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cropInfoId != null">crop_info_id = #{cropInfoId},</if>
+            <if test="recordTime != null">record_time = #{recordTime},</if>
+            <if test="temperature != null">temperature = #{temperature},</if>
+            <if test="arowths != null">arowths = #{arowths},</if>
+            <if test="humidness != null">humidness = #{humidness},</if>
+            <if test="illumination != null">illumination = #{illumination},</if>
+            <if test="pic != null">pic = #{pic},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where plan_id = #{planId}
+    </update>
+
+    <delete id="deletePlanInfoByPlanId" parameterType="Long">
+        update plan_info set del_flag = '2' where plan_id = #{planId}
+    </delete>
+
+    <delete id="deletePlanInfoByPlanIds" parameterType="String">
+        update plan_info set del_flag = '2' where plan_id in
+        <foreach collection="array" item="planId" open="(" separator="," close=")">
+            #{planId}
+        </foreach>
+    </delete>
+</mapper>
