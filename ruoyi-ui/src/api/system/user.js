@@ -1,10 +1,65 @@
 import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/ruoyi";
 
+
+
+/**
+ * 获取用户名以及 申请单号
+ */
+export function getUsernameAndNum() {
+  return request({
+    url: '/system/user/getNumAndUsername',
+    method: 'get',
+  })
+}
+
+// 新增申请恢复用户
+export function addActiviti(data) {
+  return request({
+    url: '/activiti/activiti/add',
+    method: 'post',
+    data: data
+  })
+}
+
+
+// 获取已删除列表
+export function getUserDelList(query) {
+  return request({
+    url: '/system/user/userDelList',
+    method: 'get',
+    params: query
+  })
+}
+// 获取城市列表
+export function getCityList() {
+  return request({
+    url: '/system/user/cityList',
+    method: 'get',
+  })
+}
+
+// 使用es查询用户列表
+export function listEs(query) {
+  return request({
+    url: '/system/user/esList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询用户列表
 export function listUser(query) {
   return request({
     url: '/system/user/list',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getAddress(query) {
+  return request({
+    url: '/system/user/address',
     method: 'get',
     params: query
   })

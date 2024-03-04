@@ -1,5 +1,6 @@
 package com.ruoyi.system.api.domain;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.*;
@@ -11,17 +12,22 @@ import com.ruoyi.common.core.annotation.Excel.Type;
 import com.ruoyi.common.core.annotation.Excels;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import com.ruoyi.common.core.xss.Xss;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 /**
  * 用户对象 sys_user
- * 
+ *
  * @author ruoyi
  */
+@Document(indexName = "sys_user")//es里面的表名
 public class SysUser extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** 用户ID */
+    @Id
     @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
 
@@ -29,8 +35,39 @@ public class SysUser extends BaseEntity
     @Excel(name = "部门编号", type = Type.IMPORT)
     private Long deptId;
 
+    @Override
+    public String toString() {
+        return "SysUser{" +
+                "userId=" + userId +
+                ", deptId=" + deptId +
+                ", userName='" + userName + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", email='" + email + '\'' +
+                ", phonenumber='" + phonenumber + '\'' +
+                ", sex='" + sex + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", password='" + password + '\'' +
+                ", status='" + status + '\'' +
+                ", delFlag='" + delFlag + '\'' +
+                ", loginIp='" + loginIp + '\'' +
+                ", loginDate=" + loginDate +
+                ", dept=" + dept +
+                ", roles=" + roles +
+                ", roleIds=" + Arrays.toString(roleIds) +
+                ", postIds=" + Arrays.toString(postIds) +
+                ", provinceId=" + provinceId +
+                ", theCityId=" + theCityId +
+                ", areaId=" + areaId +
+                ", roleId=" + roleId +
+                ", provinceName='" + provinceName + '\'' +
+                ", theCityName='" + theCityName + '\'' +
+                ", areaName='" + areaName + '\'' +
+                '}';
+    }
+
     /** 用户账号 */
     @Excel(name = "登录名称")
+    @Field(analyzer = "ik_max_word")//分词器
     private String userName;
 
     /** 用户昵称 */
@@ -72,8 +109,8 @@ public class SysUser extends BaseEntity
 
     /** 部门对象 */
     @Excels({
-        @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
-        @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
+            @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
+            @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
     })
     private SysDept dept;
 
@@ -85,13 +122,78 @@ public class SysUser extends BaseEntity
 
     /** 岗位组 */
     private Long[] postIds;
-
+    /**
+     * 省Id
+     */
+    private Integer provinceId;
+    /**
+     * 市ID
+     */
+    private Integer theCityId;
+    /**
+     * 区ID
+     */
+    private Integer areaId;
     /** 角色ID */
     private Long roleId;
+
+    private String provinceName;
+
+    private String theCityName;
+
+    private String areaName;
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
+    public String getTheCityName() {
+        return theCityName;
+    }
+
+    public void setTheCityName(String theCityName) {
+        this.theCityName = theCityName;
+    }
+
+    public String getAreaName() {
+        return areaName;
+    }
+
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
 
     public SysUser()
     {
 
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getTheCityId() {
+        return theCityId;
+    }
+
+    public void setTheCityId(Integer theCityId) {
+        this.theCityId = theCityId;
+    }
+
+    public Integer getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(Integer areaId) {
+        this.areaId = areaId;
     }
 
     public SysUser(Long userId)
@@ -296,28 +398,5 @@ public class SysUser extends BaseEntity
     {
         this.roleId = roleId;
     }
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("userId", getUserId())
-            .append("deptId", getDeptId())
-            .append("userName", getUserName())
-            .append("nickName", getNickName())
-            .append("email", getEmail())
-            .append("phonenumber", getPhonenumber())
-            .append("sex", getSex())
-            .append("avatar", getAvatar())
-            .append("password", getPassword())
-            .append("status", getStatus())
-            .append("delFlag", getDelFlag())
-            .append("loginIp", getLoginIp())
-            .append("loginDate", getLoginDate())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("remark", getRemark())
-            .append("dept", getDept())
-            .toString();
-    }
+
 }

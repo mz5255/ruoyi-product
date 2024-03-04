@@ -1,22 +1,44 @@
 package com.ruoyi.system.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.Snowflake;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.system.api.domain.SysCity;
+import com.ruoyi.system.domain.vo.*;
+import com.ruoyi.system.mapper.SysUserMapper;
+import com.ruoyi.system.service.*;
+import com.ruoyi.system.utils.UserUtil;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.ibatis.annotations.Param;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.HighlightQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -33,16 +55,11 @@ import com.ruoyi.system.api.domain.SysDept;
 import com.ruoyi.system.api.domain.SysRole;
 import com.ruoyi.system.api.domain.SysUser;
 import com.ruoyi.system.api.model.LoginUser;
-import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.ISysDeptService;
-import com.ruoyi.system.service.ISysPermissionService;
-import com.ruoyi.system.service.ISysPostService;
-import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.repository.SysUserRepository;
 
 /**
  * 用户信息
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -67,20 +84,234 @@ public class SysUserController extends BaseController
     @Autowired
     private ISysConfigService configService;
 
-    /**
-     * 获取用户列表无参
-     */
+    @Autowired
+    private ISysCityService iSysCityService;
 
-    @GetMapping("userList")
-    public HashMap<String,Object> getUsetList(){
-        HashMap<String, Object> map = new HashMap<>();
-        List<SysUser> list = userService.MySelectUserList();
-        map.put("list",list);
-        return  map;
+    @Autowired
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+
+    @Autowired
+    private SysUserRepository sysUserRepository;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    UserUtil userUtil;
+    @Autowired
+    SysUserMapper userMapper;
+
+    /**
+     * 增量同步到es
+     */
+    @PostMapping("updateEs")
+    public void updateEs(@RequestBody SysUser sysUser){
+            sysUserRepository.save(sysUser);
     }
 
 
 
+    /**
+     * 工作流获取申请单号以及 申请人
+     */
+    @GetMapping("getNumAndUsername")
+    public Map getNumAndUsername(){
+        String num = new Snowflake().nextIdStr();
+        String username = SecurityUtils.getUsername();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("num",num);
+        map.put("username",username);
+        return map;
+    }
+
+
+    /**
+     * 根据用户名获取用户
+     */
+    @PostMapping("getUserByUsername")
+    public SysUser getUserByUsername(@RequestParam("username") String username){
+        SysUser sysUser = userService.selectUserByUserNameByDelFlag(username);
+        return sysUser;
+    }
+
+
+
+    /**
+     *获取最早创建用户 以及 获取最晚创建用户
+     */
+    @GetMapping("getListByCreated")
+    public Map getUserListByCreated(){
+        HashMap<String, Object> map = new HashMap<>();
+        //获取最早创建用户
+      List<SysUser> minSysUser =  userService.selectUserByMinCreated();
+       //获取最晚创建用户
+        List<SysUser> maxSysUser =  userService.selectUserByMaxCreated();
+        //获取各个时间段的注册人数
+      EchartsVo echartsVo = userService.selectUserListByCreated();
+
+        ArrayList<Object> list = new ArrayList<>();
+
+
+        //饼图
+        EcharsVoOne echarsVoOne = new EcharsVoOne();
+        echarsVoOne.setName("2020-2022");
+        echarsVoOne.setValue(echartsVo.getVOne());
+        list.add(echarsVoOne);
+
+        EcharsVoTwo echarsVoOne1 = new EcharsVoTwo();
+        echarsVoOne1.setName("2022-2024");
+        echarsVoOne1.setValue(echartsVo.getVTwo());
+        list.add(echarsVoOne1);
+
+        EcharsVoThree echarsVoOne2 = new EcharsVoThree();
+        echarsVoOne2.setName("2024-2026");
+        echarsVoOne2.setValue(echartsVo.getVThree());
+        list.add(echarsVoOne2);
+
+        EcharsVoFour echarsVoOne3 = new EcharsVoFour();
+        echarsVoOne3.setName("2026-2028");
+        echarsVoOne3.setValue(echartsVo.getVFour());
+        list.add(echarsVoOne3);
+
+        //折线图
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("2020-2022");
+        strings.add("2022-2024");
+        strings.add("2024-2026");
+        strings.add("2026-2028");
+        ArrayList<Integer> integers = new ArrayList<>();
+        integers.add(echartsVo.getVOne());
+        integers.add(echartsVo.getVTwo());
+        integers.add(echartsVo.getVThree());
+        integers.add(echartsVo.getVFour());
+
+        map.put("name",strings);
+        map.put("value",integers);
+        map.put("data",list);
+        map.put("minSysUser",minSysUser);
+        map.put("maxSysUser",maxSysUser);
+        return map;
+    }
+
+
+
+
+
+    /**
+     * 获取用户列表
+     * @return
+     */
+    @GetMapping("/userList")
+    public HashMap<String,Object> getUsetList(){
+        HashMap<String, Object> map = new HashMap<>();
+        List list = userService.MySelectUserList();
+        map.put("list",list);
+        return map;
+    }
+
+    /**
+     * 获取城市列表
+     */
+    @GetMapping("/cityList")
+    public  Map<String,Object> getCityList(){
+
+        List<SysCity> list =null;
+        if(redisTemplate.hasKey("cityList")){
+            list= redisTemplate.opsForList().range("cityList",0,-1);
+        }else{
+            list = iSysCityService.myList(0);
+            redisTemplate.opsForList().rightPushAll("cityList",list);
+            redisTemplate.expire("cityList",30, TimeUnit.MINUTES);
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("list", list);
+        return map;
+    }
+
+    /**
+     * elasticsearch 查询方法
+     */
+
+    @GetMapping("esList")
+    public Map<String,Object> getEsList(SysUser sysUser, QueryPage queryPage) throws ParseException {
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        //逻辑删除  只有等于0的才能查出来
+        boolQueryBuilder.must(QueryBuilders.termQuery("delFlag",sysUser.getDelFlag()));
+        //用户名模糊查询
+        if(StringUtils.isNotEmpty(sysUser.getUserName())){
+            boolQueryBuilder.must(QueryBuilders.wildcardQuery("userName","*"+sysUser.getUserName().toLowerCase(Locale.ROOT)+"*"));
+        }
+        //手机号精确查询
+        if(sysUser.getPhonenumber()!=null){
+            boolQueryBuilder.must(QueryBuilders.wildcardQuery("phonenumber","*"+sysUser.getPhonenumber().toLowerCase(Locale.ROOT)+"*"));
+        }
+        //状态精确查询
+        if(StringUtils.isNotEmpty(sysUser.getStatus())){
+            boolQueryBuilder.must(QueryBuilders.termQuery("status",sysUser.getStatus()));
+        }
+        //区间查询
+        Date beginTime = DateUtils.parseDate((String) sysUser.getParams().get("beginTime"));
+        Date endTime = DateUtils.parseDate((String) sysUser.getParams().get("endTime"));
+        RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("createTime");
+        if(beginTime!=null){
+            rangeQuery.gte(beginTime.getTime());
+            boolQueryBuilder.must(rangeQuery);
+        }
+        if(endTime!=null){
+            rangeQuery.lte(endTime.getTime());
+            boolQueryBuilder.must(rangeQuery);
+        }
+
+
+        //分页
+        PageRequest pageRequest = PageRequest.of(queryPage.getPageNum() - 1, queryPage.getPageSize(), Sort.Direction.ASC, "userId");
+
+        // 高亮
+        HighlightBuilder.Field[] fields = new HighlightBuilder.Field[1];
+        fields[0] = new HighlightBuilder.Field("userName")
+                .preTags("<font color='red'>")
+                .postTags("</font>");
+        //创建查询对象
+        NativeSearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(boolQueryBuilder)
+                .withPageable(pageRequest)
+                .withHighlightFields(fields)
+                .build();
+
+
+        //获取被选中的集合
+        SearchHits<SysUser> search = elasticsearchRestTemplate.search(query, SysUser.class);
+        List<SearchHit<SysUser>> searchHits = search.getSearchHits();//获取被选中集合
+        ArrayList<SysUser> list = new ArrayList<>();
+        searchHits.forEach(r->{
+            SysUser content = r.getContent();
+            //处理高亮
+            if(fields!=null){
+                Map<String, List<String>> highlightFields = r.getHighlightFields();
+                if(highlightFields!=null){
+                    List<String> userName = highlightFields.get("userName");
+                    if(userName!=null){
+                        String hightName = userName.get(0);
+                        content.setUserName(hightName);//覆盖之前内容
+                    }
+                }
+            }
+            list.add(content);
+        });
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("list",list);
+        map.put("total",search.getTotalHits());//获取总条数
+        return map;
+    }
+
+    /**
+     * elasticsearch初始化列表
+     */
+    @PostConstruct
+    public void init(){
+        List<SysUser> sysUsers = userService.selectUserList(new SysUser());
+        sysUserRepository.saveAll(sysUsers);
+    }
     /**
      * 获取用户列表
      */
@@ -145,6 +376,9 @@ public class SysUserController extends BaseController
         return R.ok(sysUserVo);
     }
 
+
+
+
     /**
      * 注册用户信息
      */
@@ -166,7 +400,7 @@ public class SysUserController extends BaseController
 
     /**
      * 获取用户信息
-     * 
+     *
      * @return 用户信息
      */
     @GetMapping("getInfo")
@@ -228,7 +462,22 @@ public class SysUserController extends BaseController
         }
         user.setCreateBy(SecurityUtils.getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+
+        //全量同步到es
+        userUtil.fullSync(user.getUserId());
         return toAjax(userService.insertUser(user));
+    }
+
+
+
+
+
+    /**
+     * 自定义修改用户
+     */
+    @PostMapping("updateUser")
+    public void updateUser(@RequestBody SysUser sysUser){
+        userMapper.updateUser(sysUser);
     }
 
     /**
@@ -254,6 +503,11 @@ public class SysUserController extends BaseController
             return error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setUpdateBy(SecurityUtils.getUsername());
+
+
+        //全量同步到es
+        userUtil.fullSync(user.getUserId());
+
         return toAjax(userService.updateUser(user));
     }
 
@@ -269,6 +523,14 @@ public class SysUserController extends BaseController
         {
             return error("当前用户不能删除");
         }
+        for (Long userId : userIds) {
+            //全量同步到es
+            SysUser sysUser = userService.selectUserById(userId);
+            sysUser.setDelFlag("2");
+            sysUserRepository.save(sysUser);
+        }
+
+
         return toAjax(userService.deleteUserByIds(userIds));
     }
 
@@ -298,6 +560,10 @@ public class SysUserController extends BaseController
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
         user.setUpdateBy(SecurityUtils.getUsername());
+
+//        全量同步到es
+        userUtil.fullSync(user.getUserId());
+
         return toAjax(userService.updateUserStatus(user));
     }
 

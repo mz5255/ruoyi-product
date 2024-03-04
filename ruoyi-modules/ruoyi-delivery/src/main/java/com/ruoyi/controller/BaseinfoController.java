@@ -1,16 +1,9 @@
 package com.ruoyi.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.hutool.core.io.file.FileNameUtil;
-import com.ruoyi.config.MinioConfig;
-import com.ruoyi.domain.BaseInfo;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import lombok.extern.java.Log;
+import com.ruoyi.system.api.domain.BaseInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,13 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.security.annotation.RequiresPermissions;
 import com.ruoyi.service.BaseInfoService;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.TableDataInfo;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 种植基地信息Controller

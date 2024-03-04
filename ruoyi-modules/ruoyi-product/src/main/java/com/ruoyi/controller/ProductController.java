@@ -6,7 +6,6 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.ExcelUtil;
 import com.ruoyi.common.PageBean;
 import com.ruoyi.common.ResultModel;
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.domain.ProcessingPlant;
 import com.ruoyi.domain.SysProduct;
 import com.ruoyi.service.FeignService;
@@ -20,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("productManagement")
@@ -36,6 +37,18 @@ public class ProductController {
     @Autowired
     FeignService feignService;
 
+
+    /**
+     * 产品列表1
+     */
+    @GetMapping("ProductListOne")
+    public Map<String,Object> getProductList(){
+        HashMap<String, Object> map = new HashMap<>();
+        List<SysProduct> list = productService.getManagement(new SysProduct());
+        map.put("data", list);
+        return map;
+    }
+
     /**
      * 产品列表
      * @param pageBean
@@ -43,18 +56,17 @@ public class ProductController {
      */
     @GetMapping("ProductList")
     public ResultModel productList(PageBean pageBean, SysProduct SysProduct){
-//        List<SysProduct> productList = (List<SysProduct>) redisTemplate.opsForValue().get("productList");
-//        if (productList!=null){
-//            PageHelper.startPage(pageBean);
-//            PageInfo<SysProduct> productManagementPageInfo = new PageInfo<>(productList);
-//            return ResultModel.successed(productManagementPageInfo);
-//        }
+        List<SysProduct> productList = (List<SysProduct>) redisTemplate.opsForValue().get("productList");
+        if (productList!=null){
+            PageHelper.startPage(pageBean);
+            PageInfo<SysProduct> productManagementPageInfo = new PageInfo<>(productList);
+            return ResultModel.successed(productManagementPageInfo);
+        }
         PageHelper.startPage(pageBean);
         List<SysProduct> list = productService.getManagement(SysProduct);
         PageInfo<SysProduct> productManagementPageInfo = new PageInfo<>(list);
         redisTemplate.opsForValue().set("productList",list);
         return ResultModel.successed(productManagementPageInfo);
-
     }
 
     /**

@@ -135,10 +135,12 @@ export default {
             Cookies.set("username", this.loginForm.username, { expires: 30 });
             Cookies.set("password", encrypt(this.loginForm.password), { expires: 30 });
             Cookies.set('rememberMe', this.loginForm.rememberMe, { expires: 30 });
+            sessionStorage.setItem("username",this.loginForm.username);
           } else {
             Cookies.remove("username");
             Cookies.remove("password");
             Cookies.remove('rememberMe');
+            sessionStorage.setItem("username",this.loginForm.username);
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || "/" }).catch(()=>{});

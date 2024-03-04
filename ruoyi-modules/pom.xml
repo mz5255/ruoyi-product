@@ -20,7 +20,6 @@
         <module>ruoyi-factory</module>
         <module>ruoyi-delivery</module>
         <module>ruoyi-product</module>
-        <module>ruoyi-openFeign</module>
     </modules>
 
     <artifactId>ruoyi-modules</artifactId>

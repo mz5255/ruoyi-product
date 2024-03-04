@@ -1,6 +1,12 @@
 import request from '@/utils/request'
 
-
+//获取农作物信息
+export function getProductList() {
+  return request({
+    url: '/delivery/planInfo/productList',
+    method: 'get',
+  })
+}
 // 导出excel
 export function downExcel() {
   return request({

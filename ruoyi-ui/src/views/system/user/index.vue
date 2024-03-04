@@ -1,5 +1,9 @@
 <template>
   <div class="app-container">
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
+      <el-tab-pane label="账号恢复" name="second">账号恢复</el-tab-pane>
+    </el-tabs>
     <el-row :gutter="20">
       <!--部门数据-->
       <el-col :span="4" :xs="24">
@@ -133,24 +137,37 @@
               v-hasPermi="['system:user:export']"
             >导出</el-button>
           </el-col>
+
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
-
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible" />
-          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" >
+            <template v-slot="scope">
+              <span v-html="scope.row.userName"></span>
+            </template>
+          </el-table-column>
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
+          <el-table-column label="家庭住址" align="center" v-if="columns[7].visible" :show-overflow-tooltip="true" >
+            <template v-slot="scope">
+              <span v-if="scope.row.provinceName != null">{{scope.row.provinceName}}/</span>
+              <span v-if="scope.row.theCityName != null">{{scope.row.theCityName}}/</span>
+              <span v-if="scope.row.areaName != null">{{scope.row.areaName}}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
               <el-switch
+                v-if="queryParams.delFlag===0"
                 v-model="scope.row.status"
                 active-value="0"
                 inactive-value="1"
                 @change="handleStatusChange(scope.row)"
               ></el-switch>
+              <el-tag v-else type="danger">已删除</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[6].visible" width="160">
@@ -164,40 +181,52 @@
             width="160"
             class-name="small-padding fixed-width"
           >
-            <template slot-scope="scope" v-if="scope.row.userId !== 1">
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-edit"
-                @click="handleUpdate(scope.row)"
-                v-hasPermi="['system:user:edit']"
-              >修改</el-button>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.row)"
-                v-hasPermi="['system:user:remove']"
-              >删除</el-button>
-              <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
-                <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
-                    v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
-                  <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
-                    v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+            <template slot-scope="scope" v-if="scope.row.userId !== 1" >
+              <template v-if="queryParams.delFlag===0">
+                <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-edit"
+                  @click="handleUpdate(scope.row)"
+                  v-hasPermi="['system:user:edit']"
+                >修改</el-button>
+                <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-delete"
+                  @click="handleDelete(scope.row)"
+                  v-hasPermi="['system:user:remove']"
+                >删除</el-button>
+
+                <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
+                  <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
+                                      v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
+                    <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
+                                      v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </template>
+              <template v-if="queryParams.delFlag===2">
+                <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-edit"
+                  @click="applyForOpen(scope.row)"
+                >申请恢复</el-button>
+              </template>
+
+
             </template>
           </el-table-column>
         </el-table>
-
         <pagination
           v-show="total>0"
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
-          @pagination="getList"
+          @pagination="getEsList"
         />
       </el-col>
     </el-row>
@@ -301,6 +330,18 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="家庭住址">
+              <el-cascader
+                v-model="cityId"
+                :options="options"
+                :props="{ expandTrigger: 'hover' ,value:'id',label:'name'}"
+                placeholder="请选择家庭住址"
+                @change="handleChange"></el-cascader>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -337,11 +378,43 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--申请恢复-->
+    <el-dialog title="申请" :visible.sync="dialogFormVisible">
+      <el-form :model="applyForForm">
+        <el-form-item label="申请单号" :label-width="formLabelWidth">
+          <el-input type="text" disabled v-model="applyForForm.num" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="申请人" :label-width="formLabelWidth">
+          <el-input type="text" disabled v-model="applyForForm.userName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="申请原因" :label-width="formLabelWidth">
+          <el-input type="textarea" v-model="applyForForm.reason" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="applyFor">发送申请</el-button>
+      </div>
+    </el-dialog>
   </div>
+
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from "@/api/system/user";
+import {
+  listUser,
+  getUser,
+  delUser,
+  addUser,
+  updateUser,
+  resetUserPwd,
+  changeUserStatus,
+  deptTreeSelect,
+  listEs,
+  getCityList,
+  getUserDelList, addActiviti, getUsernameAndNum
+} from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -352,6 +425,15 @@ export default {
   components: { Treeselect },
   data() {
     return {
+      applyForForm:{},
+      //申请恢复组件
+      dialogFormVisible: false,
+      formLabelWidth: '120px',
+      //查询列表参数 0为未删除用户 1为已删除用户
+      activeName:'',
+      search:0,
+      cityId:[], //双向绑定数组  用于修改回显
+      options:[],//城市集合
       // 遮罩层
       loading: true,
       // 选中数组
@@ -382,8 +464,10 @@ export default {
       postOptions: [],
       // 角色选项
       roleOptions: [],
+
       // 表单参数
-      form: {},
+      form: {
+      },
       defaultProps: {
         children: "children",
         label: "label"
@@ -405,6 +489,7 @@ export default {
       },
       // 查询参数
       queryParams: {
+        delFlag:0,
         pageNum: 1,
         pageSize: 10,
         userName: undefined,
@@ -420,7 +505,8 @@ export default {
         { key: 3, label: `部门`, visible: true },
         { key: 4, label: `手机号码`, visible: true },
         { key: 5, label: `状态`, visible: true },
-        { key: 6, label: `创建时间`, visible: true }
+        { key: 6, label: `创建时间`, visible: true },
+        { key: 7, label: `家庭住址`, visible: true }
       ],
       // 表单校验
       rules: {
@@ -458,7 +544,12 @@ export default {
       this.$refs.tree.filter(val);
     }
   },
+  mounted() {
+
+  },
   created() {
+    this.getEsList();
+    this.cityList();
     this.getList();
     this.getDeptTree();
     this.getConfigKey("sys.user.initPassword").then(response => {
@@ -466,6 +557,109 @@ export default {
     });
   },
   methods: {
+
+    /**
+     * 获取用户名以及 申请单号
+     */
+    getUsername(){
+      getUsernameAndNum().then(r=>{
+        this.applyForForm.num = r.num;
+        this.dialogFormVisible = true;
+
+      })
+    },
+
+
+    /**
+     * 发送恢复申请
+     */
+    applyFor(){
+      console.log(this.applyForForm)
+      addActiviti(this.applyForForm).then(r=>{
+        if(r.code===200){
+          this.dialogFormVisible = false;
+        }else{
+          console.log(r.msg);
+        }
+      })
+    },
+    /**
+     * 打开申请恢复弹框
+     */
+    applyForOpen(value){
+      this.applyForForm.userId = value.userId;
+      this.applyForForm.userName = value.userName;
+      this.getUsername();
+    },
+
+    /**
+     * 页面切换 申请恢复 和用户管理
+     */
+    handleClick() {
+      this.queryParams.delFlag = this.activeName==="first"?0:2;
+      this.handleQuery();
+    },
+
+    /**
+     * 城市表数据
+     */
+    cityList(){
+      getCityList().then(r=>{
+        this.options=this.delNull(r.list)
+      })
+    },
+
+    /**
+     * // 把空的children数组去掉的方法
+     * @param data
+     * @returns {*}
+     */
+    delNull(data){
+      // 把控的children数组去掉的方法
+      if(data!=null){
+        for (var i=0;i<data.length;i++ ){
+          if(data[i].children&&data[i].children.length<1){
+            data[i].children=undefined;
+          }else{
+            this.delNull(data[i].children)
+          }
+        }
+      }
+      return data;
+    },
+    /**
+     * 级联选择器
+     */
+    handleChange(value){
+      if(value.length == 1) {
+        this.form.provinceId=value[0];
+        this.form.theCityId=null;
+        this.form.areaId=null;
+      }
+      if (value.length == 2){
+        this.form.provinceId=value[0];
+        this.form.theCityId=value[1];
+        this.form.areaId=null;
+      }
+      if (value.length == 3){
+        this.form.provinceId=value[0];
+        this.form.theCityId=value[1];
+        this.form.areaId=value[2];
+      }
+
+
+    },
+
+
+    /**
+     * 获取es用户列表
+     */
+    getEsList(){
+      listEs(this.addDateRange(this.queryParams, this.dateRange)).then(r => {
+        this.userList = r.list;
+        this.total = r.total;
+      });
+    },
     /** 查询用户列表 */
     getList() {
       this.loading = true;
@@ -505,6 +699,7 @@ export default {
     },
     // 取消按钮
     cancel() {
+      this.cityId = [];
       this.open = false;
       this.reset();
     },
@@ -522,14 +717,18 @@ export default {
         status: "0",
         remark: undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [],
+        provinceId: undefined,
+        theCityId : undefined,
+        areaId: undefined,
       };
+      this.cityId = [];
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
-      this.getList();
+      this.getEsList()
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -561,6 +760,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+
       getUser().then(response => {
         this.postOptions = response.posts;
         this.roleOptions = response.roles;
@@ -580,6 +780,16 @@ export default {
         this.$set(this.form, "postIds", response.postIds);
         this.$set(this.form, "roleIds", response.roleIds);
         this.open = true;
+        this.cityId = [] ;
+        if(this.form.provinceId!=null){
+          this.cityId[0] = this.form.provinceId;
+        }
+        if(this.form.theCityId!=null){
+          this.cityId[1] = this.form.theCityId;
+        }
+        if(this.form.areaId!=null){
+          this.cityId[2] = this.form.areaId;
+        }
         this.title = "修改用户";
         this.form.password = "";
       });
@@ -593,10 +803,10 @@ export default {
         inputPattern: /^.{5,20}$/,
         inputErrorMessage: "用户密码长度必须介于 5 和 20 之间"
       }).then(({ value }) => {
-          resetUserPwd(row.userId, value).then(response => {
-            this.$modal.msgSuccess("修改成功，新密码是：" + value);
-          });
-        }).catch(() => {});
+        resetUserPwd(row.userId, value).then(response => {
+          this.$modal.msgSuccess("修改成功，新密码是：" + value);
+        });
+      }).catch(() => {});
     },
     /** 分配角色操作 */
     handleAuthRole: function(row) {

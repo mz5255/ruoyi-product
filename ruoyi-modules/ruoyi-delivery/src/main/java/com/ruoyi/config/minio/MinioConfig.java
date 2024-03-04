@@ -1,4 +1,4 @@
-package com.ruoyi.config;
+package com.ruoyi.config.minio;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
