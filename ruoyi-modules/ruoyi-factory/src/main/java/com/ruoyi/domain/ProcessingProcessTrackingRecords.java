@@ -1,6 +1,7 @@
 package com.ruoyi.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -82,6 +83,8 @@ public class ProcessingProcessTrackingRecords {
     @ApiModelProperty("记录人员名称")
     @Length(max= 255,message="编码长度不能超过255")
     private String recordingPersonnelName;
+
+    private List<Integer> productIds;
 
     private Integer pageNum = 1;
     private Integer pageSize = 10;

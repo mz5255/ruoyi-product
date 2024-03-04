@@ -35,6 +35,10 @@
         select * from operator
     </select>
 
+    <select id="getOperatorByProcessingPlantId" resultMap="BaseResultMap">
+        select * from operator where processing_plant_id = #{id}
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from operator
         where  id = #{id,jdbcType=INTEGER}

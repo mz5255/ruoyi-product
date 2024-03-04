@@ -6,6 +6,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 * @TableName operator
 */
 @Data
+@Accessors(chain = true)
 public class Operator {
 
     /**
