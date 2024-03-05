@@ -13,22 +13,12 @@
             <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="legalPerson" column="legal_person" jdbcType="VARCHAR"/>
             <result property="personNumber" column="person_number" jdbcType="INTEGER"/>
-
-            <result property="baseProvinceId" column="base_province_id" jdbcType="INTEGER"/>
-            <result property="baseCityId" column="base_city_id" jdbcType="INTEGER"/>
-            <result property="baseAreaId" column="base_area_id" jdbcType="INTEGER"/>
-            <result property="baseProvinceName" column="base_province_name" jdbcType="INTEGER"/>
-            <result property="baseCityName" column="base_city_name" jdbcType="INTEGER"/>
-            <result property="baseAreaName" column="base_area_name" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,version,name,
         address,create_time,status,
-        legal_person,person_number,
-        base_province_id,base_city_id,
-        base_area_id,base_province_name,
-        base_city_name,base_area_name
+        legal_person,person_number
     </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -48,11 +38,6 @@
         </if>
     </select>
 
-    <select id="getProductByProcessingPlantId" resultType="com.ruoyi.domain.SysProductProcessingPlant">
-        select product_id as productId,processing_plant_id as processingPlantId,create_time as createTime,del_flag as delFlag,
-        operator,product_name as productName from sys_product_processing_plant where processing_plant_id = #{id}
-    </select>
-
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from processing_plant
         where  id = #{id,jdbcType=INTEGER}
@@ -61,13 +46,10 @@
         insert into processing_plant
         ( id,version,name
         ,address,create_time,status
-        ,legal_person,person_number,base_province_id,base_city_id,base_area_id,
-        base_province_name,base_city_name,base_area_name)
+        ,legal_person,person_number)
         values (#{id,jdbcType=INTEGER},#{version,jdbcType=INTEGER},#{name,jdbcType=VARCHAR}
         ,#{address,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER}
-        ,#{legalPerson,jdbcType=VARCHAR},#{personNumber,jdbcType=INTEGER},#{baseProvinceId,jdbcType=INTEGER}
-        ,#{baseCityId,jdbcType=INTEGER},#{baseAreaId,jdbcType=INTEGER},#{baseProvinceName,jdbcType=INTEGER}
-        ,#{baseCityName,jdbcType=INTEGER},#{baseAreaName,jdbcType=INTEGER})
+        ,#{legalPerson,jdbcType=VARCHAR},#{personNumber,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.domain.ProcessingPlant" useGeneratedKeys="true">
         insert into processing_plant
@@ -80,13 +62,6 @@
                 <if test="status != null">status,</if>
                 <if test="legalPerson != null">legalPerson,</if>
                 <if test="personNumber != null">personNumber,</if>
-
-                <if test="baseProvinceId != null">baseProvinceId,</if>
-                <if test="baseCityId != null">baseCityId,</if>
-                <if test="baseAreaId != null">baseAreaId,</if>
-                <if test="baseProvinceName != null">baseProvinceName,</if>
-                <if test="baseCityName != null">baseCityName,</if>
-                <if test="baseAreaName != null">baseAreaName,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
                 <if test="id != null">id = #{id,jdbcType=INTEGER},</if>
@@ -97,30 +72,8 @@
                 <if test="status != null">status = #{status,jdbcType=INTEGER},</if>
                 <if test="legalPerson != null">legal_person = #{legalPerson,jdbcType=VARCHAR},</if>
                 <if test="personNumber != null">person_number = #{personNumber,jdbcType=INTEGER},</if>
-
-                <if test="baseProvinceId != null">base_province_id = #{baseProvinceId,jdbcType=INTEGER},</if>
-                <if test="baseCityId != null">base_city_id = #{baseCityId,jdbcType=INTEGER},</if>
-                <if test="baseAreaId != null">base_area_id = #{baseAreaId,jdbcType=INTEGER},</if>
-                <if test="baseProvinceName != null">base_province_name = #{baseProvinceName,jdbcType=INTEGER},</if>
-                <if test="baseCityName != null">base_city_name = #{baseCityName,jdbcType=INTEGER},</if>
-                <if test="baseAreaName != null">base_area_name = #{baseAreaName,jdbcType=INTEGER},</if>
         </trim>
     </insert>
-
-
-    <insert id="insertBacth">
-
-        insert into processing_plant(name,create_time,status,legal_person,person_number,base_province_id,base_province_name,
-        base_city_id,base_city_name,base_area_id,base_area_name) values
-        <foreach collection="list" separator="," item="arr">
-            (#{arr.name},#{arr.createTime},#{arr.status},#{arr.legalPerson},#{arr.personNumber}
-            ,#{arr.baseProvinceId},#{arr.baseProvinceName},#{arr.baseCityId},#{arr.baseCityName}
-            ,#{arr.baseAreaId},#{arr.baseAreaName})
-        </foreach>
-
-    </insert>
-
-
     <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.domain.ProcessingPlant">
         update processing_plant
         <set>
@@ -157,14 +110,7 @@
             create_time =  #{createTime,jdbcType=TIMESTAMP},
             status =  #{status,jdbcType=INTEGER},
             legal_person =  #{legalPerson,jdbcType=VARCHAR},
-            person_number =  #{personNumber,jdbcType=INTEGER},
-
-            base_province_id =  #{baseProvinceId,jdbcType=INTEGER},
-            base_city_id =  #{baseCityId,jdbcType=INTEGER},
-            base_area_id =  #{baseAreaId,jdbcType=INTEGER},
-            base_province_name =  #{baseProvinceName,jdbcType=INTEGER},
-            base_city_name =  #{baseCityName,jdbcType=INTEGER},
-            base_area_name =  #{baseAreaName,jdbcType=INTEGER}
+            person_number =  #{personNumber,jdbcType=INTEGER}
         where   id = #{id,jdbcType=INTEGER}
     </update>
 </mapper>

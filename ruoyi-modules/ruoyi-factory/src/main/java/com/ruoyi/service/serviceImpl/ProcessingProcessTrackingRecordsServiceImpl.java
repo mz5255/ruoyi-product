@@ -3,10 +3,7 @@ package com.ruoyi.service.serviceImpl;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.security.auth.AuthUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.ruoyi.domain.Operator;
 import com.ruoyi.domain.ProcessingProcessTrackingRecords;
-import com.ruoyi.domain.SysProductProcessingPlant;
-import com.ruoyi.mapper.OperatorMapper;
 import com.ruoyi.mapper.ProcessingProcessTrackingRecordsMapper;
 import com.ruoyi.service.ProcessingProcessTrackingRecordsService;
 import com.ruoyi.system.api.model.LoginUser;
@@ -21,10 +18,6 @@ public class ProcessingProcessTrackingRecordsServiceImpl implements ProcessingPr
 
     @Autowired
     ProcessingProcessTrackingRecordsMapper mapper;
-
-    @Autowired
-    private OperatorMapper operatorMapper;
-
 
     @Override
     public List<ProcessingProcessTrackingRecords> selectProcessingProcessTrackingRecordsList(ProcessingProcessTrackingRecords processingProcessTrackingRecords) {
@@ -50,24 +43,11 @@ public class ProcessingProcessTrackingRecordsServiceImpl implements ProcessingPr
 
     @Override
     public Integer insertProcessingProcessTrackingRecords(ProcessingProcessTrackingRecords processingProcessTrackingRecords) {
-
-
-        StringBuilder productName = new StringBuilder("加工");
-
         processingProcessTrackingRecords.setProcessTime(new Date());
         String token = SecurityUtils.getToken();
         LoginUser loginUser = AuthUtil.getLoginUser(token);
         processingProcessTrackingRecords.setRecordingPersonnelId(loginUser.getUserid().intValue());
         processingProcessTrackingRecords.setRecordingPersonnelName(loginUser.getUsername());
-
-        Operator operator = operatorMapper.selectByPrimaryKey(Long.valueOf(processingProcessTrackingRecords.getOperatorId()));
-        processingProcessTrackingRecords.setOperatorName(operator.getName());
-
-        List<SysProductProcessingPlant> list = mapper.getSysProductProcessingPlantByProductIds(processingProcessTrackingRecords.getProductIds());
-        for (SysProductProcessingPlant sysProductProcessingPlant : list) {
-            productName.append(sysProductProcessingPlant.getProductName());
-        }
-        processingProcessTrackingRecords.setProcessContext(productName.toString());
         return mapper.insert(processingProcessTrackingRecords);
     }
 

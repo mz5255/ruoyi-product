@@ -36,23 +36,9 @@
     <select id="selectProcessingProcessTrackingRecordsList"
             resultMap="BaseResultMap">
 
-        select * from processing_process_tracking_records where 1=1
-        <if test="param.processingPlantId!=null and param.processingPlantId!=''">
-            and processing_plant_id = #{param.processingPlantId}
-        </if>
+        select * from processing_process_tracking_records
 
     </select>
-
-
-    <select id="getSysProductProcessingPlantByProductIds"
-            resultType="com.ruoyi.domain.SysProductProcessingPlant">
-        select product_id as productId,processing_plant_id as processingPlantId,create_time as createTime,del_flag as delFlag,
-        operator,product_name as productName from sys_product_processing_plant where product_id in
-        <foreach collection="productId" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </select>
-
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from processing_process_tracking_records

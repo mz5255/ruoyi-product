@@ -95,7 +95,7 @@ export default {
 #container {
   width: 80%;
   height: 500px;
-  margin: 10px auto;
+  margin: 50px auto;
   border: 1px solid red}
 </style>
 
